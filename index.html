@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Santa Generator 🎅</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(180deg, #1a3a3a 0%, #0f2626 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Snow effect in background */
+        .snow-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Main container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header section */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .santa-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 3.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-family: 'Mountains of Christmas', cursive;
+            text-shadow: 3px 3px 20px rgba(0, 0, 0, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: #c5e8e0;
+            font-size: 1.2em;
+            font-weight: 300;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Red section header */
+        .section-header {
+            background: linear-gradient(135deg, #c9302c 0%, #e74c3c 100%);
+            padding: 25px 30px;
+            border-radius: 16px 16px 0 0;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 20px rgba(201, 48, 44, 0.4);
+        }
+
+        .section-number {
+            background: rgba(255, 255, 255, 0.2);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: white;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        /* Form container */
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .participant-form {
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: #2c3e50;
+            font-size: 0.95em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .participant-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        input, select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            background: #fafafa;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #c9302c;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(201, 48, 44, 0.1);
+        }
+
+        input::placeholder {
+            color: #999;
+        }
+
+        /* Checkbox styling */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            color: #2c3e50;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        /* Budget section */
+        .budget-section {
+            margin: 25px 0;
+            padding: 25px;
+            background: #fff7ed;
+            border-radius: 12px;
+            border: 2px solid #fed7aa;
+        }
+
+        .budget-section .form-label {
+            color: #c9302c;
+            font-size: 1.1em;
+            margin-bottom: 12px;
+        }
+
+        /* Buttons */
+        button {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-add {
+            background: #27ae60;
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-add:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, #c9302c 0%, #e74c3c 100%);
+            color: white;
+            width: 100%;
+            font-size: 18px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 6px 25px rgba(201, 48, 44, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 35px rgba(201, 48, 44, 0.5);
+        }
+
+        .btn-remove {
+            background: #e74c3c;
+            color: white;
+            padding: 16px 24px;
+            box-shadow: 0 2px 10px rgba(231, 76, 60, 0.3);
+            white-space: nowrap;
+        }
+
+        .btn-remove:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        .btn-download {
+            background: #27ae60;
+            color: white;
+            padding: 16px 32px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-download:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+
+        /* Loading state */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            display: none;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 25px;
+            border: 5px solid rgba(255, 255, 255, 0.2);
+            border-top: 5px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 500;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Results section */
+        .results {
+            margin-top: 40px;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results-header {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            padding: 25px 30px;
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 4px 20px rgba(39, 174, 96, 0.4);
+            text-align: center;
+        }
+
+        .results-header h2 {
+            color: white;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        .results-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .results-content p {
+            color: #2c3e50;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        /* Email status section */
+        .email-status {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .email-status h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .status-sent {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .status-failed {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            color: #f39c12;
+            font-weight: 600;
+        }
+
+        /* Error message */
+        .error {
+            background: rgba(231, 76, 60, 0.95);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+            font-weight: 500;
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+
+            .subtitle {
+                font-size: 1em;
+            }
+
+            .santa-icon {
+                font-size: 4em;
+            }
+
+            .form-container {
+                padding: 25px 20px;
+            }
+
+            .participant-row {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 1.4em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Snow canvas for background effect -->
+    <canvas class="snow-canvas" id="snowCanvas"></canvas>
+
+    <div class="container">
+        <div class="header">
+            <span class="santa-icon">🎅</span>
+            <h1>Secret Santa Generator</h1>
+            <p class="subtitle">Spread the holiday cheer with automated gift exchanges!</p>
+        </div>
+
+        <div class="section-header">
+            <div class="section-number">1</div>
+            <h2 class="section-title">Add Participants</h2>
+        </div>
+
+        <div class="form-container">
+            <div class="participant-form" id="participantForm">
+                <div class="participant-row">
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" placeholder="Enter name" class="name-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" placeholder="Enter email address" class="email-input">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Budget Section -->
+            <div class="budget-section">
+                <label class="form-label">💰 Gift Budget Range</label>
+                <select id="budgetSelect">
+                    <option value="$10-$20">$10 - $20</option>
+                    <option value="$20-$30" selected>$20 - $30</option>
+                    <option value="$30-$50">$30 - $50</option>
+                    <option value="$50-$100">$50 - $100</option>
+                    <option value="$100+">$100+</option>
+                </select>
+            </div>
+
+            <!-- Organizer Checkbox -->
+            <div class="checkbox-group">
+                <input type="checkbox" id="organizerCheck">
+                <label for="organizerCheck">📋 I'm the organizer (I want to download the full match list)</label>
+            </div>
+            
+            <button class="btn-add" onclick="addParticipant()">+ Add Another Participant</button>
+            <button class="btn-generate" onclick="generateMatches()">🎄 Generate Secret Santa Matches</button>
+            
+            <div class="error" id="error"></div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>✨ Creating your magical matches... ✨</p>
+        </div>
+        
+        <div class="results" id="results">
+            <div class="results-header">
+                <h2>🎉 Matches Generated Successfully!</h2>
+            </div>
+            <div class="results-content">
+                <p id="resultsText"></p>
+                
+                <!-- Email Delivery Status -->
+                <div class="email-status" id="emailStatus" style="display: none;">
+                    <h3>📧 Email Delivery Status</h3>
+                    <div id="emailStatusList"></div>
+                </div>
+
+                <!-- Download CSV Button (for organizers) -->
+                <div id="downloadSection" style="display: none;">
+                    <button class="btn-download" onclick="downloadCSV()">📥 Download Match List (CSV)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'https://4ejp4y7o51.execute-api.us-east-1.amazonaws.com/prod';
+        let currentSessionId = null;
+        
+        // Snow effect
+        const canvas = document.getElementById('snowCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const snowflakes = [];
+        const snowflakeCount = 150;
+        
+        class Snowflake {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.radius = Math.random() * 3 + 1;
+                this.speed = Math.random() * 1 + 0.5;
+                this.wind = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.6 + 0.4;
+            }
+            
+            update() {
+                this.y += this.speed;
+                this.x += this.wind;
+                
+                if (this.y > canvas.height) {
+                    this.y = 0;
+                    this.x = Math.random() * canvas.width;
+                }
+                
+                if (this.x > canvas.width) {
+                    this.x = 0;
+                } else if (this.x < 0) {
+                    this.x = canvas.width;
+                }
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+        
+        for (let i = 0; i < snowflakeCount; i++) {
+            snowflakes.push(new Snowflake());
+        }
+        
+        function animateSnow() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            snowflakes.forEach(snowflake => {
+                snowflake.update();
+                snowflake.draw();
+            });
+            
+            requestAnimationFrame(animateSnow);
+        }
+        
+        animateSnow();
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // Form functionality
+        function addParticipant() {
+            const form = document.getElementById('participantForm');
+            const row = document.createElement('div');
+            row.className = 'participant-row';
+            row.innerHTML = `
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" placeholder="Enter name" class="name-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" placeholder="Enter email address" class="email-input">
+                </div>
+                <button class="btn-remove" onclick="this.closest('.participant-row').remove()">Remove</button>
+            `;
+            form.appendChild(row);
+        }
+        
+        async function generateMatches() {
+            const rows = document.querySelectorAll('.participant-row');
+            const participants = [];
+            
+            rows.forEach(row => {
+                const name = row.querySelector('.name-input').value.trim();
+                const email = row.querySelector('.email-input').value.trim();
+                
+                if (name && email) {
+                    participants.push({ name, email });
+                }
+            });
+            
+            if (participants.length < 3) {
+                showError('Please add at least 3 participants to generate matches');
+                return;
+            }
+
+            const budget = document.getElementById('budgetSelect').value;
+            const isOrganizer = document.getElementById('organizerCheck').checked;
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_URL}/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        participants,
+                        budget,
+                        is_organizer: isOrganizer
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to generate matches');
+                }
+                
+                currentSessionId = data.session_id;
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('results').style.display = 'block';
+                
+                // Display results
+                let resultsHTML = `<strong>Session ID:</strong> ${data.session_id}<br><br>`;
+                resultsHTML += `<strong>Budget Range:</strong> ${budget}<br><br>`;
+                resultsHTML += `Your Secret Santa matches have been generated successfully!<br><br>`;
+                resultsHTML += `<strong>Happy Holidays! 🎄🎁</strong>`;
+                
+                document.getElementById('resultsText').innerHTML = resultsHTML;
+                
+                // Show email delivery status
+                if (data.email_status && data.email_status.length > 0) {
+                    displayEmailStatus(data.email_status);
+                }
+                
+                // Show download button for organizers
+                if (isOrganizer) {
+                    document.getElementById('downloadSection').style.display = 'block';
+                }
+                
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                showError('Oops! Something went wrong. Please try again.');
+                console.error('Error:', error);
+            }
+        }
+        
+        function displayEmailStatus(emailStatus) {
+            const statusDiv = document.getElementById('emailStatus');
+            const listDiv = document.getElementById('emailStatusList');
+            
+            let sent = 0;
+            let failed = 0;
+            
+            let html = '';
+            
+            emailStatus.forEach(status => {
+                const icon = status.status === 'sent' ? '✅' : '❌';
+                const statusClass = status.status === 'sent' ? 'status-sent' : 'status-failed';
+                
+                if (status.status === 'sent') sent++;
+                else failed++;
+                
+                html += `
+                    <div class="status-item">
+                        <span>${icon}</span>
+                        <span>${status.email}</span>
+                        <span class="${statusClass}">${status.status.toUpperCase()}</span>
+                    </div>
+                `;
+            });
+            
+            // Add summary at the top
+            const summary = `<p style="margin-bottom: 15px;"><strong>${sent}/${emailStatus.length} emails sent successfully</strong>${failed > 0 ? `, ${failed} failed` : ''}</p>`;
+            
+            listDiv.innerHTML = summary + html;
+            statusDiv.style.display = 'block';
+        }
+        
+        async function downloadCSV() {
+            if (!currentSessionId) {
+                showError('No session ID found. Please generate matches first.');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/get-matches?session_id=${currentSessionId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to retrieve matches');
+                }
+                
+                const data = await response.json();
+                
+                // Create CSV content
+                let csv = 'Giver Name,Giver Email,Receiver Name,Receiver Email,Budget\n';
+                
+                data.matches.forEach(match => {
+                    csv += `"${match.giver.name}","${match.giver.email}","${match.receiver.name}","${match.receiver.email}","${data.budget}"\n`;
+                });
+                
+                // Download CSV
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `secret-santa-matches-${currentSessionId}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+            } catch (error) {
+                showError('Failed to download matches. Please try again.');
+                console.error('Error:', error);
+            }
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
