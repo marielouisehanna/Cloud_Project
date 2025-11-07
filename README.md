@@ -22,33 +22,6 @@ This project allows authenticated users to create, manage, and email Secret Sant
 
 ---
 
-## Project Structure
-
-```
-api-gateway.tf
-app.js
-auth.js
-auth_navbar.js
-cloudfront.tf
-cognito.tf
-dynamodb.tf
-iam.tf
-index.html
-lambda.tf
-lambda_function.py
-lambda_function_1.py
-lambda_get_matches.py
-lambda_get_matches.tf
-outputs.tf
-provider.tf
-s3-website.tf
-s3.tf
-ses.tf
-styles.css
-```
-
----
-
 ## Frontend Features
 
 - Simple HTML/JS website with a snow animation.  
