@@ -1,19 +1,12 @@
 import json
 import boto3
-from decimal import Decimal
+import os
 
 dynamodb = boto3.resource('dynamodb')
 
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Decimal):
-            return int(obj)
-        return super(DecimalEncoder, self).default(obj)
-
 def handler(event, context):
     """
-    Lambda handler to retrieve Secret Santa matches by session ID
-    Used for organizer CSV download
+    Lambda handler to retrieve Secret Santa matches by session_id
     """
     try:
         # Get session_id from query parameters
@@ -31,9 +24,11 @@ def handler(event, context):
                 })
             }
         
-        # Get matches from DynamoDB
-        table = dynamodb.Table('SecretSantaMatches')
+        # Get table name from environment variable
+        table_name = os.environ.get('TABLE_NAME', 'SecretSantaMatches')
+        table = dynamodb.Table(table_name)
         
+        # Retrieve the matches from DynamoDB
         response = table.get_item(
             Key={
                 'session_id': session_id
@@ -54,19 +49,6 @@ def handler(event, context):
         
         item = response['Item']
         
-        # Check if organizer access was requested
-        if not item.get('is_organizer', False):
-            return {
-                'statusCode': 403,
-                'headers': {
-                    'Access-Control-Allow-Origin': '*',
-                    'Content-Type': 'application/json'
-                },
-                'body': json.dumps({
-                    'error': 'Access denied. This session was not created with organizer access.'
-                })
-            }
-        
         return {
             'statusCode': 200,
             'headers': {
@@ -75,10 +57,11 @@ def handler(event, context):
             },
             'body': json.dumps({
                 'session_id': session_id,
-                'matches': item['matches'],
-                'budget': item.get('budget', 'Not specified'),
-                'created_at': item['created_at']
-            }, cls=DecimalEncoder)
+                'matches': item.get('matches', []),
+                'budget': item.get('budget', ''),
+                'is_organizer': item.get('is_organizer', False),
+                'created_at': item.get('created_at', '')
+            })
         }
         
     except Exception as e:

@@ -37,3 +37,11 @@ resource "aws_s3_object" "index_html" {
   content_type = "text/html"
   etag         = filemd5("index.html")
 }
+
+resource "aws_s3_object" "auth_js" {
+  bucket       = aws_s3_bucket.secret_santa_website.id
+  key          = "auth.js"
+  source       = "auth.js"
+  content_type = "application/javascript"
+  etag         = filemd5("auth.js")
+}
