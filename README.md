@@ -80,4 +80,4 @@ styles.css
 
 ---
 
-(image_2.png)
+![Secret Santa Website Login Page](image_2.png)
