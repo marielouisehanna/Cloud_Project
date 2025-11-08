@@ -105,7 +105,8 @@ async function generateMatches() {
         return;
     }
 
-    const budget = document.getElementById('budgetSelect').value;
+    const budgetRadio = document.querySelector('input[name="budget"]:checked');
+    const budget = budgetRadio ? budgetRadio.value : '$20-$30';
     const isOrganizer = document.getElementById('organizerCheck').checked;
     
     document.getElementById('loading').style.display = 'block';

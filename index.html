@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secret Santa Generator 🎅</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=5">
     <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.6/dist/amazon-cognito-identity.min.js"></script>
 </head>
 <body>
@@ -70,25 +70,62 @@
                             <input type="email" placeholder="Enter email address" class="email-input">
                         </div>
                     </div>
+                    <div class="participant-row">
+                        <div class="form-group">
+                            <label class="form-label">Name</label>
+                            <input type="text" placeholder="Enter name" class="name-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" placeholder="Enter email address" class="email-input">
+                        </div>
+                        <button class="btn-remove" onclick="this.closest('.participant-row').remove()">Remove</button>
+                    </div>
+                    <div class="participant-row">
+                        <div class="form-group">
+                            <label class="form-label">Name</label>
+                            <input type="text" placeholder="Enter name" class="name-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" placeholder="Enter email address" class="email-input">
+                        </div>
+                        <button class="btn-remove" onclick="this.closest('.participant-row').remove()">Remove</button>
+                    </div>
                 </div>
+                
+                <button class="btn-add" onclick="addParticipant()">+ Add Another Participant</button>
                 
                 <div class="budget-section">
                     <label class="form-label">💰 Gift Budget Range</label>
-                    <select id="budgetSelect">
-                        <option value="$10-$20">$10 - $20</option>
-                        <option value="$20-$30" selected>$20 - $30</option>
-                        <option value="$30-$50">$30 - $50</option>
-                        <option value="$50-$100">$50 - $100</option>
-                        <option value="$100+">$100+</option>
-                    </select>
+                    <div class="budget-options">
+                        <label class="budget-option">
+                            <input type="radio" name="budget" value="$10-$20">
+                            <span>$10 - $20</span>
+                        </label>
+                        <label class="budget-option">
+                            <input type="radio" name="budget" value="$20-$30" checked>
+                            <span>$20 - $30</span>
+                        </label>
+                        <label class="budget-option">
+                            <input type="radio" name="budget" value="$30-$50">
+                            <span>$30 - $50</span>
+                        </label>
+                        <label class="budget-option">
+                            <input type="radio" name="budget" value="$50-$100">
+                            <span>$50 - $100</span>
+                        </label>
+                        <label class="budget-option">
+                            <input type="radio" name="budget" value="$100+">
+                            <span>$100+</span>
+                        </label>
+                    </div>
                 </div>
 
                 <div class="checkbox-group">
                     <input type="checkbox" id="organizerCheck">
                     <label for="organizerCheck">📋 I'm the organizer (I want to download the full match list)</label>
                 </div>
-                
-                <button class="btn-add" onclick="addParticipant()">+ Add Another Participant</button>
                 <button class="btn-generate" onclick="generateMatches()">🎄 Generate Secret Santa Matches</button>
                 
                 <div class="error" id="error"></div>
